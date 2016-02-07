@@ -4,11 +4,10 @@
 
 ###Loading necessary package for data 
 
-```{r loading_Pack,echo=TRUE} 
 
+```r
 library(lattice)
 library(dplyr)
-
 ```
 
 ###Loading and preprocessing the data
@@ -17,11 +16,10 @@ library(dplyr)
 * step 2: Removing cases where steps are NA/missing
 
 
-```{r loading_data,echo=TRUE} 
 
+```r
 active<-read.csv("activity.csv",stringsAsFactors = F)
 active1<-filter(active,is.na(steps) == FALSE)
-
 ```
 
 ###What is mean total number of steps taken per day?
@@ -33,8 +31,8 @@ active1<-filter(active,is.na(steps) == FALSE)
 * step 5: Reporting Mean and Median calculated in step 4
 
 
-```{r stats_plot,echo=TRUE} 
 
+```r
 acitve2<-group_by(active1,date)
 acitve3<-summarise(acitve2,count = n(),Steps_per_day = sum(steps))
 
@@ -49,10 +47,11 @@ medianstr <- sprintf("median = %.2f", MD_STEPS)
 
 abline(v = MD_STEPS, lty = 3, col = "blue")
 abline(v = MN_STEPS, lty = 2, col = "red")
-
 ```
 
-Mean and Median of total number of steps per day is `r MN_STEPS` and `r MD_STEPS` respectively.
+![plot of chunk stats_plot](figure/stats_plot-1.png)
+
+Mean and Median of total number of steps per day is 1.0766189 &times; 10<sup>4</sup> and 10765 respectively.
 
   
 
@@ -65,8 +64,8 @@ Mean and Median of total number of steps per day is `r MN_STEPS` and `r MD_STEPS
 * step 4: Calculating interval with maximum number of steps taken
 * step 5: Reporting value calculated in step 4
 
-```{r Timeseries,echo=TRUE} 
 
+```r
 acitve4<-group_by(active1,interval)
 acitve5<-summarise(acitve4,count = n(),Steps_5min_inter = mean(steps))
 plot(acitve5$interval,acitve5$Steps_5min_inter,type = "l",xlab = "5-minute interval",ylab = "averaged steps across all days")
@@ -74,10 +73,11 @@ max_interval<-acitve5$interval[acitve5$Steps_5min_inter == max(acitve5$Steps_5mi
 
 abline(v = max_interval, lty = 2, col = "red")
 text(1000,"cutoff",col = "red")
-
 ```
 
-on average across all the days in the dataset, `r max_interval` interval contains the maximum number of steps
+![plot of chunk Timeseries](figure/Timeseries-1.png)
+
+on average across all the days in the dataset, 835 interval contains the maximum number of steps
 
 
 ###Imputing missing values
@@ -91,8 +91,8 @@ on average across all the days in the dataset, `r max_interval` interval contain
 * step 6: histogram is plotted side by side for data set Without NA and Complete Clean data in same pan
 * step 7: Conclusive differnce is reported
 
-```{r dataclean,echo=TRUE} 
 
+```r
 activeNA<-filter(active,is.na(steps) == TRUE)
 
 finalmerged<-merge(activeNA, acitve5, by.x = "interval", by.y = "interval")
@@ -121,11 +121,12 @@ TOT_MD_STEPS<-median(as.numeric(totalperday1$stepsperday))
 
 abline(v = TOT_MD_STEPS, lty = 3, col = "blue")
 abline(v = TOT_MN_STEPS, lty = 2, col = "red")
-
 ```
 
+![plot of chunk dataclean](figure/dataclean-1.png)
+
 Mean and Median of total number of steps per day is 
-`r TOT_MN_STEPS` and `r TOT_MD_STEPS` respectively in clean data set 
+1.0766189 &times; 10<sup>4</sup> and 1.0766189 &times; 10<sup>4</sup> respectively in clean data set 
 with NA removed with average values, this is 
 same as we had in the dataset where we NAs were removed.
 
@@ -133,8 +134,8 @@ Only difference is the increase in frequency/number of cases.
 
 ###Are there differences in activity patterns between weekdays and weekends?
 
-```{r diff,echo=TRUE} 
 
+```r
 cleandata$weekday<-weekdays(as.Date(cleandata$date))
 
 cleandata$Work[cleandata$weekday == "Monday"]<-1
@@ -165,9 +166,10 @@ par(mfrow = c(2,1))
 plot(myweekdays2$interval,myweekdays2$stepsperinterval,xlab = "Interval",ylab = "Steps",main = "Weekday Pattern",type = "l")
 
 plot(myweekends2$interval,myweekends2$stepsperinterval,xlab = "Interval",ylab = "Steps",main = "Weekend Pattern",type = "l")
-
 ```
 
+![plot of chunk diff](figure/diff-1.png)
+
 There's a difference between weekday and weekend activity pattern as depicted by two overlayed line graph, blue line reperesent weekday pattern
-and red line represent weekend pattern. Average number of steps taken weekend i.e. `r mean(myweekends2$stepsperinterval)` is more than weekdays i.e. `r mean(myweekdays2$stepsperinterval)`
+and red line represent weekend pattern. Average number of steps taken weekend i.e. 42.3664013 is more than weekdays i.e. 35.6105812
 
